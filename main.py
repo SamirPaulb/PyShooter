@@ -67,7 +67,7 @@ sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
 #store tiles in a list
 img_list = []
 for x in range(TILE_TYPES):
-	img = pygame.image.load(f'img/Tile/{x}.png')
+	img = pygame.image.load(f'img/tile/{x}.png')
 	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
 	img_list.append(img)
 #bullet
