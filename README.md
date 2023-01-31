@@ -29,3 +29,7 @@ cd PyShooter
 python main.py
 ```
 
+
+---
+
+Character images taken from: https://secrethideout.itch.io/team-wars-platformer-battle
