@@ -32,4 +32,10 @@ python main.py
 
 ---
 
-Character images taken from: https://secrethideout.itch.io/team-wars-platformer-battle
+
+Credits for assets used: 
+1. https://erayzesen.itch.io/pixel-platformer 
+2. https://secrethideout.itch.io/team-wars-platformer-battle 
+3. https://soundimage.org/fantasywonder 
+4. https://gushh.net/blog/free-game-sprites-explosion-3  
+5. https://mtk.itch.io/grenades-16x16 
