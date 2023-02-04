@@ -9,17 +9,17 @@ mixer.init()
 pygame.init()
 
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.8)
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.5)
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('PyShooter - SamirPaul1')
 
-#set framerate
+# set framerate
 clock = pygame.time.Clock()
 FPS = 60
 
-#define game variables
+# define game variables
 GRAVITY = 0.75
 SCROLL_THRESH = 200
 ROWS = 16
@@ -34,7 +34,7 @@ start_game = False
 start_intro = False
 
 
-#define player action variables
+# define player action variables
 moving_left = False
 moving_right = False
 shoot = False
@@ -42,10 +42,10 @@ grenade = False
 grenade_thrown = False
 
 
-#load music and sounds
-#pygame.mixer.music.load('audio/music2.mp3')
-#pygame.mixer.music.set_volume(0.3)
-#pygame.mixer.music.play(-1, 0.0, 5000)
+# load music and sounds
+pygame.mixer.music.load('audio/music2.mp3')
+pygame.mixer.music.set_volume(0.2) 
+pygame.mixer.music.play(-1, 0.0, 5000)  # (loops, start, fade_ms) # loop = -1 => infinite loop; start = 0.0 => time from which the music starts playing; fade_ms is an optional integer argument, which is 0 by default, which denotes the period of time (in milliseconds) over which the music will fade up from volume level 0.0 to full volume 
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.05)
 shot_fx = pygame.mixer.Sound('audio/shot.wav')
@@ -54,27 +54,30 @@ grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
 grenade_fx.set_volume(0.05)
 
 
-#load images
-#button images
-start_img = pygame.image.load('img/start_btn.png').convert_alpha()
+# load images
+# button images
+# pygame.image.load() function call will return a Surface object that has the image drawn on it. 
+# convert() and convert_alpha() are both used to convert surfaces to the same pixel format as used by the screen.
+start_img = pygame.image.load('img/start_btn.png').convert_alpha()  
 exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 restart_img = pygame.image.load('img/restart_btn.png').convert_alpha()
-#background
+# background
 pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
 pine2_img = pygame.image.load('img/background/pine2.png').convert_alpha()
 mountain_img = pygame.image.load('img/background/mountain.png').convert_alpha()
 sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
-#store tiles in a list
+# store tiles in a list
 img_list = []
 for x in range(TILE_TYPES):
 	img = pygame.image.load(f'img/tile/{x}.png')
+	# To scale the image we use the pygame.transform.scale()
 	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
 	img_list.append(img)
-#bullet
+# bullet
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
-#grenade
+# grenade
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
-#pick up boxes
+# pick up boxes
 health_box_img = pygame.image.load('img/icons/health_box.png').convert_alpha()
 ammo_box_img = pygame.image.load('img/icons/ammo_box.png').convert_alpha()
 grenade_box_img = pygame.image.load('img/icons/grenade_box.png').convert_alpha()
@@ -85,7 +88,7 @@ item_boxes = {
 }
 
 
-#define colours
+# define colours
 BG = (144, 201, 120)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -93,25 +96,24 @@ GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 PINK = (235, 65, 54)
 
-#define font
+# define font
 font = pygame.font.SysFont('Futura', 30)
 
 def draw_text(text, font, text_col, x, y):
-	img = font.render(text, True, text_col)
-	screen.blit(img, (x, y))
-
+	img = font.render(text, True, text_col)		# create a new image (surface) with the specified text rendered on it
+	screen.blit(img, (x, y))	# draws a source Surface onto this Surface
 
 def draw_bg():
 	screen.fill(BG)
 	width = sky_img.get_width()
 	for x in range(5):
+		# during running sky speed < mountain < pine1 < pine2  => so it looks like 3D
 		screen.blit(sky_img, ((x * width) - bg_scroll * 0.5, 0))
 		screen.blit(mountain_img, ((x * width) - bg_scroll * 0.6, SCREEN_HEIGHT - mountain_img.get_height() - 300))
 		screen.blit(pine1_img, ((x * width) - bg_scroll * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
 		screen.blit(pine2_img, ((x * width) - bg_scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height()))
 
-
-#function to reset level
+# function to reset level
 def reset_level():
 	enemy_group.empty()
 	bullet_group.empty()
@@ -121,21 +123,17 @@ def reset_level():
 	decoration_group.empty()
 	water_group.empty()
 	exit_group.empty()
-
-	#create empty tile list
+	# create empty tile list
 	data = []
 	for row in range(ROWS):
 		r = [-1] * COLS
 		data.append(r)
-
 	return data
-
-
 
 
 class Soldier(pygame.sprite.Sprite):
 	def __init__(self, char_type, x, y, scale, speed, ammo, grenades):
-		pygame.sprite.Sprite.__init__(self)
+		pygame.sprite.Sprite.__init__(self)  # A sprite is a two dimensional image that is part of the larger graphical scene. 
 		self.alive = True
 		self.char_type = char_type
 		self.speed = speed
@@ -153,19 +151,19 @@ class Soldier(pygame.sprite.Sprite):
 		self.animation_list = []
 		self.frame_index = 0
 		self.action = 0
-		self.update_time = pygame.time.get_ticks()
-		#ai specific variables
+		self.update_time = pygame.time.get_ticks()   # Return the number of milliseconds since pygame.init() was called.
+		# ai specific variables
 		self.move_counter = 0
-		self.vision = pygame.Rect(0, 0, 150, 20)
+		self.vision = pygame.Rect(0, 0, 150, 20)   # pygame object for storing rectangular coordinates => Rect(left, top, width, height) 
 		self.idling = False
 		self.idling_counter = 0
 		
-		#load all images for the players
+		# load all images for the players
 		animation_types = ['Idle', 'Run', 'Jump', 'Death']
 		for animation in animation_types:
-			#reset temporary list of images
+			# reset temporary list of images
 			temp_list = []
-			#count number of files in the folder
+			# count number of files in the folder
 			num_of_frames = len(os.listdir(f'img/{self.char_type}/{animation}'))
 			for i in range(num_of_frames):
 				img = pygame.image.load(f'img/{self.char_type}/{animation}/{i}.png').convert_alpha()
@@ -179,7 +177,6 @@ class Soldier(pygame.sprite.Sprite):
 		self.width = self.image.get_width()
 		self.height = self.image.get_height()
 
-
 	def update(self):
 		self.update_animation()
 		self.check_alive()
@@ -187,13 +184,11 @@ class Soldier(pygame.sprite.Sprite):
 		if self.shoot_cooldown > 0:
 			self.shoot_cooldown -= 1
 
-
 	def move(self, moving_left, moving_right):
 		#reset movement variables
 		screen_scroll = 0
 		dx = 0
 		dy = 0
-
 		#assign movement variables if moving left or right
 		if moving_left:
 			dx = -self.speed
