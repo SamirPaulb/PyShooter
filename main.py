@@ -619,13 +619,12 @@ item_box_group = pygame.sprite.Group()
 decoration_group = pygame.sprite.Group()
 water_group = pygame.sprite.Group()
 exit_group = pygame.sprite.Group()
-
-#create empty tile list
+# create empty tile list
 world_data = []
 for row in range(ROWS):
 	r = [-1] * COLS
 	world_data.append(r)
-#load in level data and create world
+# load in level data and create world
 with open(f'level{level}_data.csv', newline='') as csvfile:
 	reader = csv.reader(csvfile, delimiter=',')
 	for x, row in enumerate(reader):
@@ -635,7 +634,7 @@ world = World()
 player, health_bar = world.process_data(world_data)
 
 run = True
-while run:
+while run:		# Game loop
 	clock.tick(FPS)
 	if start_game == False:
 		# draw menu
@@ -647,31 +646,27 @@ while run:
 		if exit_button.draw(screen):
 			run = False
 	else:
-		#update background
+		# update background
 		draw_bg()
-		#draw world map
+		# draw world map
 		world.draw()
-		#show player health
+		# show player health
 		health_bar.draw(player.health)
-		#show ammo
+		# show ammo
 		draw_text('AMMO: ', font, WHITE, 10, 35)
 		for x in range(player.ammo):
 			screen.blit(bullet_img, (90 + (x * 10), 40))
-		#show grenades
+		# show grenades
 		draw_text('GRENADES: ', font, WHITE, 10, 60)
 		for x in range(player.grenades):
 			screen.blit(grenade_img, (135 + (x * 15), 60))
-
-
 		player.update()
 		player.draw()
-
 		for enemy in enemy_group:
 			enemy.ai()
 			enemy.update()
 			enemy.draw()
-
-		#update and draw groups
+		# update and draw groups
 		bullet_group.update()
 		grenade_group.update()
 		explosion_group.update()
@@ -687,42 +682,41 @@ while run:
 		water_group.draw(screen)
 		exit_group.draw(screen)
 
-		#show intro
+		# show intro
 		if start_intro == True:
 			if intro_fade.fade():
 				start_intro = False
 				intro_fade.fade_counter = 0
 
-
-		#update player actions
+		# update player actions
 		if player.alive:
-			#shoot bullets
+			# shoot bullets
 			if shoot:
 				player.shoot()
-			#throw grenades
+			# throw grenades
 			elif grenade and grenade_thrown == False and player.grenades > 0:
 				grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
 				 			player.rect.top, player.direction)
 				grenade_group.add(grenade)
-				#reduce grenades
+				# reduce grenades
 				player.grenades -= 1
 				grenade_thrown = True
 			if player.in_air:
-				player.update_action(2)#2: jump
+				player.update_action(2)		# 2: jump
 			elif moving_left or moving_right:
-				player.update_action(1)#1: run
+				player.update_action(1)		# 1: run
 			else:
-				player.update_action(0)#0: idle
+				player.update_action(0)		# 0: idle
 			screen_scroll, level_complete = player.move(moving_left, moving_right)
 			bg_scroll -= screen_scroll
-			#check if player has completed the level
+			# check if player has completed the level
 			if level_complete:
 				start_intro = True
 				level += 1
 				bg_scroll = 0
 				world_data = reset_level()
 				if level <= MAX_LEVELS:
-					#load in level data and create world
+					# load in level data and create world
 					with open(f'level{level}_data.csv', newline='') as csvfile:
 						reader = csv.reader(csvfile, delimiter=',')
 						for x, row in enumerate(reader):
@@ -738,7 +732,7 @@ while run:
 					start_intro = True
 					bg_scroll = 0
 					world_data = reset_level()
-					#load in level data and create world
+					# load in level data and create world
 					with open(f'level{level}_data.csv', newline='') as csvfile:
 						reader = csv.reader(csvfile, delimiter=',')
 						for x, row in enumerate(reader):
@@ -747,29 +741,27 @@ while run:
 					world = World()
 					player, health_bar = world.process_data(world_data)
 
-
 	for event in pygame.event.get():
-		#quit game
+		# quit game
 		if event.type == pygame.QUIT:
 			run = False
-		#keyboard presses
+		# keyboard presses
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+			if event.key == pygame.K_a or event.key == pygame.K_LEFT:	# key "A" or "Left arror" => move left
 				moving_left = True
-			if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+			if event.key == pygame.K_d or event.key == pygame.K_RIGHT:	# key "D" or "Right arror" => move right
 				moving_right = True
-			if event.key == pygame.K_SPACE:
+			if event.key == pygame.K_SPACE:	# key " " => shoot
 				shoot = True
-			if event.key == pygame.K_q or event.key == pygame.K_g:
+			if event.key == pygame.K_q or event.key == pygame.K_g:	# key "Q" or "G" => through grenade
 				grenade = True
-			if (event.key == pygame.K_w or event.key == pygame.K_UP) and player.alive:
+			if (event.key == pygame.K_w or event.key == pygame.K_UP) and player.alive:	# key "W" or "Up arrow" => jump
 				player.jump = True
 				jump_fx.play()
-			if event.key == pygame.K_ESCAPE:
+			if event.key == pygame.K_ESCAPE:	# key "ESC" => close window
 				run = False
 
-
-		#keyboard button released
+		# keyboard button released
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_a or event.key == pygame.K_LEFT:
 				moving_left = False
@@ -780,7 +772,6 @@ while run:
 			if event.key == pygame.K_q or event.key == pygame.K_g:
 				grenade = False
 				grenade_thrown = False
-
 
 	pygame.display.update()
 
